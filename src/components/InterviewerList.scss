@@ -1,0 +1,14 @@
+@import "styles/variables.scss";
+
+.interviewers {
+  &__header {
+    color: $white;
+    font-weight:bold;
+    margin-bottom: 0.5rem;
+  }
+
+  &__list {
+    display: flex;
+    flex-flow: row wrap;
+  }
+}
