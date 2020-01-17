@@ -4,7 +4,7 @@ let classNames = require('classnames');
 
 export default function DayListItem(props) {
 
-  let dayClass=classNames({
+  let dayClass = classNames({
     'day-list__item': true,
     'day-list__item--selected': props.selected,
     'day-list__item--full': props.spots === 0
