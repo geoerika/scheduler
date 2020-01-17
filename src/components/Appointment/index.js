@@ -1,7 +1,9 @@
 import React from "react";
+import Header from "components/Appointment/Header";
+
 import 'components/Appointment/styles.scss';
 
-export default function Application(props) {
+export default function Appointment(props) {
 
   return (
     <article className="appointment">
