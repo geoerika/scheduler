@@ -13,10 +13,7 @@ export default function Form(props) {
             name="name"
             type="text"
             placeholder="Enter Student Name"
-            value={props.name}
-            /*
-              This must be a controlled component
-            */
+            value={props.name? props.name : ""}
           />
         </form>
         <InterviewerList interviewers={props.interviewers} value={props.interviewer} onChange={props.setInterviewer} />
