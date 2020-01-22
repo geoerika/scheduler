@@ -1,7 +1,7 @@
 import React from "react";
 import Confirm from "components/Appointment/Confirm";
 
-export default function Header(props) {
+export default function Show(props) {
 
   return (
     <main className="appointment__card appointment__card--show">
