@@ -1,5 +1,5 @@
 import React from "react";
-import Confirm from "components/Appointment/Confirm";
+// import Confirm from "components/Appointment/Confirm";
 
 export default function Show(props) {
 
