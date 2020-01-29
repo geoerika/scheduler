@@ -11,35 +11,42 @@ export default function Application(props) {
   const [state, setState] = useState({
     day: "Monday",
     days: [],
-    appointments: {}
+    appointments: {},
+    interviewers: {}
   });
 
   const setDay = day => setState({ ...state, day });
   // const setDays = days => setState(prev => ({ ...prev, days }))
 
+  const axiosCall = (url) => {
+    return axios
+            .get(url)
+            // .then(response => setDays(response.data)) // old code before making appointments call
+            .catch((error) => {
+              console.log(error.response.status);
+              console.log(error.response.headers);
+              console.log(error.response.data);
+            })
+  };
+
   useEffect(() => {
     Promise.all([
       Promise.resolve(
-        axios
-          .get('http://localhost:8001/api/days')
-          // .then(response => setDays(response.data)) // old code before making appointments call
-          .catch((error) => {
-            console.log(error.response.status);
-            console.log(error.response.headers);
-            console.log(error.response.data);
-          })
+        axiosCall('http://localhost:8001/api/days')
       ),
       Promise.resolve(
-        axios
-          .get('http://localhost:8001/api/appointments')
-          .catch((error) => {
-            console.log(error.response.status);
-            console.log(error.response.headers);
-            console.log(error.response.data);
-          }))
+        axiosCall('http://localhost:8001/api/appointments')
+      ),
+       Promise.resolve(
+        axiosCall('http://localhost:8001/api/interviewers')
+      )
     ]).then((all) => {
       console.log('all: ', all);
-        setState(prev => ({ days: all[0].data, appointments: all[1].data }));
+        setState(prev => ({
+          days: all[0].data,
+          appointments: all[1].data,
+          interviewers: all[2].data
+        }));
     });
   }, []);
 
@@ -51,7 +58,6 @@ export default function Application(props) {
               {...appointment}
             />
   });
-
 
   getAppointmentsForDay(state, state.day)
 
