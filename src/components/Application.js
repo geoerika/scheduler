@@ -67,10 +67,30 @@ export default function Application(props) {
                { interview : interview })
           .then(function (response) {
             console.log('put response: ', response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+  }
+
+  function cancelInterview(id) {
+
+    const appointment = {
+      ...state.appointments[id],
+      interview: null
+    }
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
+    setState({...state, appointments});
+    axios.delete(`http://localhost:8001/api/appointments/${id}`)
+          .then(function (response) {
+            console.log('put response: ', response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
   }
 
   let appointmentList = dayAppointments.map(appointment => {
@@ -82,6 +102,7 @@ export default function Application(props) {
               interview={interview}
               interviewers={dayInterviewers}
               bookInterview={ bookInterview }
+              cancelInterview={ cancelInterview }
             />
   });
 
