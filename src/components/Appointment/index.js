@@ -6,6 +6,7 @@ import Show from "components/Appointment/Show";
 import Empty from "components/Appointment/Empty";
 import Form from "components/Appointment/Form";
 import Status from "components/Appointment/Status";
+import Confirm from "components/Appointment/Confirm";
 import useVisualMode from "hooks/useVisualMode";
 
 const EMPTY = "EMPTY";
@@ -33,7 +34,6 @@ export default function Appointment(props) {
   function deleteInterview(id) {
     transition(CONFIRM);
     props.cancelInterview(props.id);
-    transition(EMPTY);
   }
 
   return (
@@ -49,6 +49,7 @@ export default function Appointment(props) {
       )}
       {mode === CREATE && <Form interviewers={ props.interviewers } onSave={ save } onCancel={() => back(EMPTY)} />}
       {mode === SAVING && <Status message={'Saving..'}/>}
+      {mode === CONFIRM && <Confirm message={'Are you sure you would like to delete?'} onConfirm={() => transition(EMPTY)}/>}
 
     </article>)
 }
