@@ -24,6 +24,7 @@ export default function Appointment(props) {
     };
     console.log("interview: ", interview);
     props.bookInterview(props.id, interview);
+    transition(SHOW);
   }
 
   return (
