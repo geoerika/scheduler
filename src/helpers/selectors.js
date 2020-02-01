@@ -27,7 +27,6 @@ export function getInterview(state, interview) {
   }
 }
 
-
 export function getInterviewersForDay(state, dayName) {
 
    const dayObjArray = state.days.filter(
