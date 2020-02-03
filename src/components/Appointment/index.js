@@ -14,6 +14,7 @@ const SHOW = "SHOW";
 const CREATE = "CREATE";
 const SAVING = "SAVING";
 const CONFIRM = "CONFIRM";
+const EDIT = 'EDIT';
 
 export default function Appointment(props) {
 
@@ -39,17 +40,34 @@ export default function Appointment(props) {
   return (
     <article className="appointment">
       <Header time={props.time}/>
-      {mode === EMPTY && (<Empty onAdd={() => transition(CREATE)} />) }
-      {mode === SHOW && (
+      {mode === EMPTY && <Empty
+                            onAdd={() => transition(CREATE)}
+                          />}
+      {mode === SHOW &&
         <Show
           student={props.interview.student}
-          interviewer={props.interview.interviewer.name}
+          interviewer={ props.interview.interviewer.name}
           onDelete = { deleteInterview }
-        />
-      )}
-      {mode === CREATE && <Form interviewers={ props.interviewers } onSave={ save } onCancel={() => back(EMPTY)} />}
-      {mode === SAVING && <Status message={'Saving..'}/>}
-      {mode === CONFIRM && <Confirm message={'Are you sure you would like to delete?'} onConfirm={() => transition(EMPTY)}/>}
-
+          onEdit = { () => transition(EDIT) }
+        />}
+      {mode === CREATE && <Form
+                             interviewers={ props.interviewers }
+                             onSave={ save }
+                             onCancel={() => back(EMPTY)}
+                          />}
+      {mode === SAVING && <Status
+                            message={'Saving..'}
+                          />}
+      {mode === CONFIRM && <Confirm
+                            message={'Are you sure you would like to delete?'}
+                            onConfirm={() => transition(EMPTY)}
+                          />}
+      {mode === EDIT && <Form
+                          name={ props.interview.student }
+                          interviewer={ props.interview.interviewer.name }
+                          interviewers={ props.interviewers }
+                          value={ props.interview.interviewer.id }
+                          onSave={ save }
+                        />}
     </article>)
 }
