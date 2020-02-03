@@ -15,6 +15,7 @@ const CREATE = "CREATE";
 const SAVING = "SAVING";
 const CONFIRM = "CONFIRM";
 const EDIT = 'EDIT';
+const DELETE = 'DELETE';
 
 export default function Appointment(props) {
 
@@ -22,19 +23,26 @@ export default function Appointment(props) {
     props.interview ? SHOW : EMPTY
   );
 
-  function save(name, interviewer) {
+  async function save(name, interviewer) {
     transition(SAVING);
     const interview = {
       student: name,
       interviewer
     };
-    props.bookInterview(props.id, interview);
+    try {
+      await props.bookInterview(props.id, interview);
+    }
+    catch(error) {
+      console.error(error);
+    }
+    console.log('after book Interview');
     transition(SHOW);
   }
 
-  function deleteInterview(id) {
-    transition(CONFIRM);
-    props.cancelInterview(props.id);
+  async function deleteInterview(id) {
+    transition(DELETE);
+    await props.cancelInterview(props.id);
+    transition(EMPTY);
   }
 
   return (
@@ -47,8 +55,8 @@ export default function Appointment(props) {
         <Show
           student={props.interview.student}
           interviewer={ props.interview.interviewer.name}
-          onDelete = { deleteInterview }
-          onEdit = { () => transition(EDIT) }
+          onDelete={ () => transition(CONFIRM) }
+          onEdit={ () => transition(EDIT) }
         />}
       {mode === CREATE && <Form
                              interviewers={ props.interviewers }
@@ -58,9 +66,12 @@ export default function Appointment(props) {
       {mode === SAVING && <Status
                             message={'Saving..'}
                           />}
+      {mode === DELETE && <Status
+                            message={'Deleting..'}
+                          />}
       {mode === CONFIRM && <Confirm
                             message={'Are you sure you would like to delete?'}
-                            onConfirm={() => transition(EMPTY)}
+                            onConfirm={ deleteInterview }
                           />}
       {mode === EDIT && <Form
                           name={ props.interview.student }
