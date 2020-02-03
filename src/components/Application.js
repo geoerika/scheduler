@@ -52,7 +52,7 @@ export default function Application(props) {
   let dayAppointments = getAppointmentsForDay(state, state.day);
   let dayInterviewers = getInterviewersForDay(state, state.day);
 
-  function bookInterview(id, interview) {
+  async function bookInterview(id, interview) {
     // console.log('bookInterview: ', id, interview);
     const appointment = {
       ...state.appointments[id],
@@ -62,18 +62,22 @@ export default function Application(props) {
       ...state.appointments,
       [id]: appointment
     };
+    // let axiosDone;
     setState({...state, appointments});
-    axios.put(`http://localhost:8001/api/appointments/${id}`,
+    await axios.put(`http://localhost:8001/api/appointments/${id}`,
                { interview : interview })
           .then(function (response) {
+            // axiosDone = response;
             console.log('put response: ', response);
           })
           .catch(function (error) {
             console.log(error);
           });
+    // console.log('axiosDone: ', axiosDone);
+    // return axiosDone;
   }
 
-  function cancelInterview(id) {
+  async function cancelInterview(id) {
 
     const appointment = {
       ...state.appointments[id],
@@ -84,7 +88,7 @@ export default function Application(props) {
       [id]: appointment
     };
     setState({...state, appointments});
-    axios.delete(`http://localhost:8001/api/appointments/${id}`)
+    await axios.delete(`http://localhost:8001/api/appointments/${id}`)
           .then(function (response) {
             console.log('put response: ', response);
           })
