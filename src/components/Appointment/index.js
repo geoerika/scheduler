@@ -7,6 +7,7 @@ import Empty from "components/Appointment/Empty";
 import Form from "components/Appointment/Form";
 import Status from "components/Appointment/Status";
 import Confirm from "components/Appointment/Confirm";
+import Error from "components/Appointment/Error";
 import useVisualMode from "hooks/useVisualMode";
 
 const EMPTY = "EMPTY";
@@ -16,6 +17,8 @@ const SAVING = "SAVING";
 const CONFIRM = "CONFIRM";
 const EDIT = 'EDIT';
 const DELETE = 'DELETE';
+const ERROR_SAVE = 'ERROR_SAVE';
+const ERROR_DELETE = 'ERROR_DELETE';
 
 export default function Appointment(props) {
 
@@ -33,7 +36,9 @@ export default function Appointment(props) {
       await props.bookInterview(props.id, interview);
     }
     catch(error) {
-      console.error(error);
+      console.error('error is: ', error);
+      transition(ERROR_SAVE);
+      return;
     }
     console.log('after book Interview');
     transition(SHOW);
@@ -81,5 +86,6 @@ export default function Appointment(props) {
                           onSave={ save }
                           onCancel={ () => back(SHOW)}
                         />}
+      {mode === ERROR_SAVE && <Error message={'There is an error when saving.'} />}
     </article>)
 }
