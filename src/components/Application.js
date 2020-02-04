@@ -70,14 +70,14 @@ export default function Application(props) {
             // axiosDone = response;
             console.log('put response: ', response);
           });
-          // .catch(function (error) {
-          //   console.log(' error is: ', error);
-          // });
-    // console.log('axiosDone: ', axiosDone);
-    // return axiosDone;
   }
 
   async function cancelInterview(id) {
+
+    await axios.delete(`http://localhost:8001/api/appointments/${id}`)
+          .then(function (response) {
+            console.log('put response: ', response);
+          });
 
     const appointment = {
       ...state.appointments[id],
@@ -88,13 +88,6 @@ export default function Application(props) {
       [id]: appointment
     };
     setState({...state, appointments});
-    await axios.delete(`http://localhost:8001/api/appointments/${id}`)
-          .then(function (response) {
-            console.log('put response: ', response);
-          });
-          // .catch(function (error) {
-          //   console.log(error);
-          // });
   }
 
   let appointmentList = dayAppointments.map(appointment => {
