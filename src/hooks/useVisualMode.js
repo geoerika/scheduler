@@ -12,7 +12,7 @@ export default function useVisualMode(initialMode) {
     console.log('mode in transition: ', mode);
     // we skip adding the new mode to history if we want to go back two modes
     if (!replace) {
-      setHistory(prev => [...prev, newMode]);
+      setHistory(prev => ([...prev, newMode]));
     }
     setMode(newMode);
   }
