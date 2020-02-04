@@ -69,10 +69,10 @@ export default function Application(props) {
           .then(function (response) {
             // axiosDone = response;
             console.log('put response: ', response);
-          })
-          .catch(function (error) {
-            console.log(error);
           });
+          // .catch(function (error) {
+          //   console.log(' error is: ', error);
+          // });
     // console.log('axiosDone: ', axiosDone);
     // return axiosDone;
   }
@@ -91,10 +91,10 @@ export default function Application(props) {
     await axios.delete(`http://localhost:8001/api/appointments/${id}`)
           .then(function (response) {
             console.log('put response: ', response);
-          })
-          .catch(function (error) {
-            console.log(error);
           });
+          // .catch(function (error) {
+          //   console.log(error);
+          // });
   }
 
   let appointmentList = dayAppointments.map(appointment => {
