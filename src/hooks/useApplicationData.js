@@ -29,7 +29,11 @@ export default function useApplicationData() {
           ...state.appointments,
           [action.value.id]: appointment
         };
-        return { ...state, appointments: appointments }
+
+        let days = updateDaySpots(state, action);
+        console.log('days:', days);
+
+        return { ...state, days: days, appointments: appointments }
       default:
         throw new Error(
           `Tried to reduce with unsupported action type: ${action.type}`
@@ -69,8 +73,7 @@ export default function useApplicationData() {
   }, []);
 
   async function bookInterview(id, interview) {
-
-    dispatch({ type: 'SET_INTERVIEW', value: { id, interview }})
+    dispatch({ type: 'SET_INTERVIEW', value: { id, interview, spots: -1 }})
     await axios.put(`http://localhost:8001/api/appointments/${id}`,
                { interview : interview })
           .then(function (response) {
@@ -84,8 +87,19 @@ export default function useApplicationData() {
           .then(function (response) {
             console.log('put response: ', response);
           });
+    dispatch({ type: 'SET_INTERVIEW', value: { id, interview: null, spots: 1 }})
+  }
 
-    dispatch({ type: 'SET_INTERVIEW', value: { id, interview: null }})
+  function updateDaySpots(state, action) {
+    return state.days.map((day) => {
+      if (day.name !== state.day) {
+        return day
+      }
+      return {
+        ...day,
+        spots: day.spots + action.value.spots
+      }
+    })
   }
 
   return { state, setDay, bookInterview, cancelInterview }
