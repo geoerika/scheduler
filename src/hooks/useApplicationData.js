@@ -1,22 +1,47 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useReducer } from 'react';
 import axios from 'axios';
 
 export default function useApplicationData() {
 
-  const [state, setState] = useState({
+  const [state, dispatch] = useReducer(reducer, {
     day: "Monday",
     days: [],
     appointments: {},
     interviewers: {}
   });
 
-  const setDay = day => setState({ ...state, day });
-  // const setDays = days => setState(prev => ({ ...prev, days }))
+  // const SET_DAY = 'SET_DAY';
+  // const SET_APPLICATION_DATA = 'SET_APPLICATION_DATA';
+  // const SET_INTERVIEW = 'SET_INTERVIEW';
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'SET_DAY':
+        return { ...state, day: action.value }
+      case 'SET_APPLICATION_DATA':
+        return { ...state, ...action.value }
+      case 'SET_INTERVIEW':
+        const appointment = {
+          ...state.appointments[action.value.id],
+          interview: action.value.interview
+        }
+        const appointments = {
+          ...state.appointments,
+          [action.value.id]: appointment
+        };
+        return { ...state, appointments: appointments }
+      default:
+        throw new Error(
+          `Tried to reduce with unsupported action type: ${action.type}`
+        );
+    }
+  }
+
+  const setDay = day => dispatch({ type: 'SET_DAY', value: day });
 
   const axiosGet = (url) => {
     return axios
             .get(url)
-            // .then(response => setDays(response.data)) // old code before making appointments call
             .catch((error) => {
               console.log(error.response.status);
               console.log(error.response.headers);
@@ -36,30 +61,19 @@ export default function useApplicationData() {
         axiosGet('http://localhost:8001/api/interviewers')
       )
     ]).then((all) => {
-        setState(prev => ({
-          days: all[0].data,
-          appointments: all[1].data,
-          interviewers: all[2].data
-        }));
+          let days = all[0].data;
+          let appointments = all[1].data;
+          let interviewers = all[2].data;
+          dispatch({ type: 'SET_APPLICATION_DATA', value: { days, appointments, interviewers }});
     });
   }, []);
 
   async function bookInterview(id, interview) {
-    // console.log('bookInterview: ', id, interview);
-    const appointment = {
-      ...state.appointments[id],
-      interview: { ...interview }
-    };
-    const appointments = {
-      ...state.appointments,
-      [id]: appointment
-    };
-    // let axiosDone;
-    setState({...state, appointments});
+
+    dispatch({ type: 'SET_INTERVIEW', value: { id, interview }})
     await axios.put(`http://localhost:8001/api/appointments/${id}`,
                { interview : interview })
           .then(function (response) {
-            // axiosDone = response;
             console.log('put response: ', response);
           });
   }
@@ -71,15 +85,7 @@ export default function useApplicationData() {
             console.log('put response: ', response);
           });
 
-    const appointment = {
-      ...state.appointments[id],
-      interview: null
-    }
-    const appointments = {
-      ...state.appointments,
-      [id]: appointment
-    };
-    setState({...state, appointments});
+    dispatch({ type: 'SET_INTERVIEW', value: { id, interview: null }})
   }
 
   return { state, setDay, bookInterview, cancelInterview }
