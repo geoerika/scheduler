@@ -1,5 +1,6 @@
 import { useEffect, useReducer } from 'react';
 import axios from 'axios';
+import update from 'immutability-helper';
 
 export default function useApplicationData() {
 
@@ -21,19 +22,24 @@ export default function useApplicationData() {
       case 'SET_APPLICATION_DATA':
         return { ...state, ...action.value }
       case 'SET_INTERVIEW':
-        const appointment = {
-          ...state.appointments[action.value.id],
-          interview: action.value.interview
-        }
-        const appointments = {
-          ...state.appointments,
-          [action.value.id]: appointment
-        };
 
         let days = updateDaySpots(state, action);
-        console.log('days:', days);
 
-        return { ...state, days: days, appointments: appointments }
+        return update(state, {
+          days: { $set: days },
+          appointments: { [action.value.id]: { interview: { $set: action.value.interview }}},
+        });
+
+        // code previous using update
+        // const appointment = {
+        //   ...state.appointments[action.value.id],
+        //   interview: action.value.interview
+        // }
+        // const appointments = {
+        //   ...state.appointments,
+        //   [action.value.id]: appointment
+        // };
+        // return { ...newState, days: days, appointments: appointments }
       default:
         throw new Error(
           `Tried to reduce with unsupported action type: ${action.type}`
@@ -91,14 +97,17 @@ export default function useApplicationData() {
   }
 
   function updateDaySpots(state, action) {
+
     return state.days.map((day) => {
       if (day.name !== state.day) {
         return day
       }
-      return {
-        ...day,
-        spots: day.spots + action.value.spots
-      }
+      return update(day, {spots: { $set: (day.spots + action.value.spots)}})
+      // code previous update
+      // {
+      //   ...day,
+      //   spots: day.spots + action.value.spots
+      // }
     })
   }
 
