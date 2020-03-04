@@ -22,7 +22,6 @@ export default function useApplicationData() {
       case 'SET_APPLICATION_DATA':
         return { ...state, ...action.value }
       case 'SET_INTERVIEW':
-
         let days = updateDaySpots(state, action);
 
         return update(state, {
@@ -60,6 +59,33 @@ export default function useApplicationData() {
   };
 
   useEffect(() => {
+    let ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+    ws.onopen = function (event) {
+      ws.send('ping');
+    };
+    ws.onmessage = event => {
+      console.log(`Message Received: ${event.data}`);
+      let msg = JSON.parse(event.data);
+      let id = msg.id;
+      let interview = msg.interview;
+      let spots = 0;
+      if (msg.interview) {
+        spots = -1;
+      } else {
+        spots = 1;
+      }
+      if (msg.type === 'SET_INTERVIEW') {
+         dispatch({ type: 'SET_INTERVIEW', value: { id, interview, spots }})
+
+      // switch(msg.type) {
+      // case 'SET_INTERVIEW':
+      //   update(state, {
+      //     appointments: { [msg.id]: { interview: { $set: msg.interview }}},
+      //   });
+      //   break;
+      // }
+      }
+    };
     Promise.all([
       Promise.resolve(
         axiosGet('http://localhost:8001/api/days')
@@ -79,7 +105,6 @@ export default function useApplicationData() {
   }, []);
 
   async function bookInterview(id, interview) {
-    dispatch({ type: 'SET_INTERVIEW', value: { id, interview, spots: -1 }})
     await axios.put(`http://localhost:8001/api/appointments/${id}`,
                { interview : interview })
           .then(function (response) {
@@ -93,7 +118,6 @@ export default function useApplicationData() {
           .then(function (response) {
             console.log('put response: ', response);
           });
-    dispatch({ type: 'SET_INTERVIEW', value: { id, interview: null, spots: 1 }})
   }
 
   function updateDaySpots(state, action) {
