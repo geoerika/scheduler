@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import 'components/Appointment/styles.scss';
 import Header from "components/Appointment/Header";
@@ -51,6 +51,15 @@ export default function Appointment(props) {
       .catch(error => transition(ERROR_DELETE, true));
   }
 
+  useEffect(() => {
+   if (props.interview && mode === EMPTY) {
+    transition(SHOW);
+   }
+   if (props.interview === null && mode === SHOW) {
+    transition(EMPTY);
+   }
+  }, [props.interview, transition, mode]);
+
   return (
 
     <article className="appointment">
@@ -58,11 +67,12 @@ export default function Appointment(props) {
       {mode === EMPTY && <Empty
                             onAdd={() => transition(CREATE)}
                           />}
-      {mode === SHOW && <Show
-                          student={props.interview.student}
-                          interviewer={ props.interview.interviewer.name}
-                          onDelete={ () => transition(CONFIRM) }
-                          onEdit={ () => transition(EDIT) }
+      {mode === SHOW && props.interview &&
+        <Show
+          student={props.interview.student}
+          interviewer={ props.interview.interviewer.name}
+          onDelete={ () => transition(CONFIRM) }
+          onEdit={ () => transition(EDIT) }
         />}
       {mode === CREATE && <Form
                              interviewers={ props.interviewers }
